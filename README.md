@@ -2,6 +2,8 @@
 
 **On-chain emotional resonance for the creator economy** — a dynamic NFT “mood capsule” where fans meet idols without surrendering proof of devotion to an opaque Web2 ledger. Built for the **Reactive Network · Vibe Coding** hackathon: the same story you’d tell a friend, backed by **three verifiable transactions** (Origin → Reactive → Destination).
 
+**Repository:** [github.com/resurrection-i/EchoCapsule](https://github.com/resurrection-i/EchoCapsule)
+
 ---
 
 ## Demo
