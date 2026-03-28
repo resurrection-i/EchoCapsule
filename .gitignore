@@ -5,6 +5,9 @@ node_modules/
 frontend/.next/
 frontend/out/
 
+# Idol mood audio (large / copyrighted — keep locally; see frontend/public/audio/README.md)
+frontend/public/audio/*.mp3
+
 # Env & secrets (never commit)
 .env
 .env.*

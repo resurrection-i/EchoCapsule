@@ -161,6 +161,8 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000). Set `NEXT_PUBLIC_CONTRACT_ADDRESS` and `NEXT_PUBLIC_API_BASE` in `frontend/.env.local`. **Wallet must be on Sepolia** (chain ID `11155111`) for contract calls.
 
+**Mood audio:** MP3s under `frontend/public/audio/` are **gitignored** (large files). Copy your own files locally using the filenames listed in [`frontend/public/audio/README.md`](frontend/public/audio/README.md).
+
 ### Tests & coverage
 
 ```bash
