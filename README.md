@@ -1,58 +1,89 @@
-# EchoCapsule
+<div align="center">
 
-**On-chain emotional resonance for the creator economy** — a dynamic NFT “mood capsule” where fans meet idols without surrendering proof of devotion to an opaque Web2 ledger. Built for the **Reactive Network · Vibe Coding** hackathon: the same story you’d tell a friend, backed by **three verifiable transactions** (Origin → Reactive → Destination).
+# ⚗️ EchoCapsule
+
+### *On-chain emotional resonance for the creator economy*
+
+**A living “mood capsule” NFT** — dynamic SVG, idol-driven state, and fan **Super comfort** on **Sepolia** — closed with **Reactive Network** so rewards are **Origin → Lasna → Destination**, not a black-box server.
+
+<br/>
+
+[![Reactive Network](https://img.shields.io/badge/Reactive_Network-Vibe_Coding-8b5cf6?style=for-the-badge)](https://dev.reactive.network/)
+[![Track](https://img.shields.io/badge/Hackathon-Custom_dApp_+_Reactive-ec4899?style=for-the-badge)](https://github.com/resurrection-i/EchoCapsule)
+[![Next.js](https://img.shields.io/badge/Next.js-14-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![Solidity](https://img.shields.io/badge/Solidity-Hardhat-363636?style=for-the-badge&logo=solidity&logoColor=white)](https://hardhat.org/)
+[![Foundry](https://img.shields.io/badge/Reactive_contracts-Foundry-1a1a1a?style=for-the-badge)](https://book.getfoundry.sh/)
+[![Go](https://img.shields.io/badge/Backend-Go-00ADD8?style=for-the-badge&logo=go&logoColor=white)](https://go.dev/)
+
+<br/>
+
+**[📖 Reactive runbook](reactive/README.md)** ·
+**[🚀 Quick start](#local-dev)** ·
+**[🏗️ Architecture](#architecture)** ·
+**[✅ Proof (tx hashes)](#tx-proof)** ·
+**[🎞️ Story deck](#demo-media)**
+
+<br/>
+
+---
+
+</div>
+
+<a id="demo-media"></a>
+
+## 🎬 Demo & media
+
+| | |
+| :--- | :--- |
+| **🎥 Demo video (≤ 5 min)** | *Coming soon — add your **YouTube / Loom / Drive** link here after upload.* |
+| **📽️ Story deck (HTML)** | Open [`docs/demo-video-intro.html`](docs/demo-video-intro.html) fullscreen. Use **← / →** or the dots: **Phase 01 → 02 → EchoCapsule → Architecture** (terminal-style hashes animate on the last slide). |
 
 **Repository:** [github.com/resurrection-i/EchoCapsule](https://github.com/resurrection-i/EchoCapsule)
 
 ---
 
-## Demo
+## 📖 The story (for judges in a hurry)
 
-| | |
-| :--- | :--- |
-| **Demo video (≤5 min)** | *Coming soon — paste your YouTube / Loom / Google Drive link here after upload.* |
-| **Story deck (HTML)** | Open [`docs/demo-video-intro.html`](docs/demo-video-intro.html) in a browser (fullscreen recommended). Use **← / →** or the bottom dots to advance **Phase 01 → 02 → EchoCapsule → Architecture**. |
+Fans vote, tip, and lose sleep for people they love — and platforms turn that into **rows in someone else’s database**. Accounts vanish; **receipts don’t**. Web3 promised **ownership**, yet many “fan NFTs” are still **JPEGs that never answer back**.
 
----
+**EchoCapsule** pushes back: a **living** capsule (**on-chain SVG** + mood-linked media) that **syncs** when the idol updates state, plus **Super comfort** — a paid, **verifiable** fan signal on-chain.
 
-## The story (for judges in a hurry)
-
-Fans today vote, tip, and stay up all night for people they love — and platforms turn that love into **traffic rows in someone else’s database**. Accounts vanish; receipts don’t. **Web3** promised ownership, but many “fan NFTs” are still **JPEGs that don’t answer back**.
-
-**EchoCapsule** is our counter-narrative: a **living** capsule (on-chain SVG + mood-driven media) that **syncs** when the idol updates state, and a **Super comfort** path where a fan’s paid message is **real on-chain signal** — not a cron job whispering from a server.
-
-The twist for this submission: **who automates the reward?** We don’t ask you to trust our backend. We use **Reactive Network** so that **Sepolia** hears the fan, **Lasna** reacts in the protocol model, and **Sepolia** settles **points** again — **code in the trust path, not a black-box script.**
+The hackathon punchline: **who automates the reward?** We use **Reactive Network** so **Sepolia** hears the fan, **Lasna** runs the reactive step, and **Sepolia** settles **points** again — **code in the trust path**, not a fragile cron + hot wallet.
 
 ---
 
-## Hackathon compliance (Reactive Network)
+## 🎯 Hackathon compliance (Reactive Network)
 
-Submission targets the **Vibe Coding** track (custom dApp + Reactive Contracts). It is **not** the separate **Demo Runner** track (three deployments from [reactive-smart-contract-demos](https://github.com/Reactive-Network/reactive-smart-contract-demos/tree/main/src/demos)).
+Built for the **Vibe Coding** track (**custom dApp + Reactive Contracts**). **Not** the separate **Demo Runner** track ([`reactive-smart-contract-demos`](https://github.com/Reactive-Network/reactive-smart-contract-demos/tree/main/src/demos)).
 
 | Requirement | How this repo satisfies it |
-|-------------|----------------------------|
+|-------------|------------------------------|
 | **Reactive Contracts** listen to EVM events and trigger follow-up txs | `SuperComfortReactive` subscribes to `SuperComfortSent` on Sepolia and emits a Reactive Network callback. |
 | **Reactive + Destination** source in repo | `reactive/src/SuperComfortReactive.sol`, `reactive/src/ComfortPointsCallback.sol` |
 | **Origin** (custom) in repo | `contracts/contracts/CapsuleNFT.sol` (emits `SuperComfortSent`) |
 | **Deployment / runbook** | [`reactive/README.md`](reactive/README.md) |
 | **Deployed addresses** | [Deployed contract addresses](#deployed-contract-addresses) |
-| **Problem & solution** | [Problem & solution](#problem--solution) |
+| **Problem & solution** | [Problem & solution](#problem-solution) |
 | **Post-deploy workflow** | [Workflow after deployment](#workflow-after-deployment) |
-| **Tx hashes (Origin / Reactive / Destination)** | [Verified workflow (tx hashes)](#verified-workflow-tx-hashes) |
+| **Tx hashes** | [Verified workflow (tx hashes)](#tx-proof) |
 
 ---
 
-## Problem & solution
+<a id="problem-solution"></a>
 
-**Problem:** A paid fan action on **Sepolia** (`superComfort`) should **automatically** produce **on-chain rewards** (e.g. `points[fan]`) on Sepolia in one **judge-verifiable** loop: **Origin → Reactive → Destination**.
+## 🔧 Problem & solution
 
-**Without Reactive:** you almost always fall back to an **off-chain indexer + hot wallet** watching `SuperComfortSent` and signing `awardPoints`. That **re-centralizes trust** (keys, uptime, retries) and **does not showcase** Reactive’s **event-driven on-chain automation** — the thing this track is meant to evaluate.
+**Problem:** A paid fan action on **Sepolia** (`superComfort`) must **automatically** produce **on-chain rewards** (e.g. `points[fan]`) on Sepolia in one **judge-verifiable** loop: **Origin → Reactive → Destination**.
 
-**With Reactive:** a contract on **Lasna** **subscribes** to the Sepolia log; the network runs the **react** step and delivers a **protocol callback** to `ComfortPointsCallback`, updating `points[fan]` with **idempotency** on `originTxHash`. The “listener + signer” moves into **Reactive’s execution model**, not our private cron.
+**Without Reactive:** you typically run an **off-chain indexer + hot wallet** watching `SuperComfortSent` and signing `awardPoints`. That **re-centralizes trust** (keys, uptime, retries) and **does not demonstrate** Reactive’s **event-driven on-chain automation** — what this track evaluates.
+
+**With Reactive:** a contract on **Lasna** **subscribes** to the Sepolia log; the network runs **react** and delivers a **protocol callback** to `ComfortPointsCallback`, updating `points[fan]` with **idempotency** on `originTxHash`. The “listener + signer” lives in **Reactive’s execution model**, not our private backend.
 
 ---
 
-## Architecture (Origin → Reactive → Destination)
+<a id="architecture"></a>
+
+## 🏗️ Architecture (Origin → Reactive → Destination)
 
 1. **Origin — Ethereum Sepolia**  
    `CapsuleNFT.superComfort(string message)` with `msg.value >= 0.0001 ether`  
@@ -66,7 +97,9 @@ Submission targets the **Vibe Coding** track (custom dApp + Reactive Contracts).
 
 ---
 
-## Deployed contract addresses
+<a id="deployed-contract-addresses"></a>
+
+## 📜 Deployed contract addresses
 
 | Role | Network | Contract | Address |
 |------|---------|----------|---------|
@@ -81,7 +114,9 @@ Submission targets the **Vibe Coding** track (custom dApp + Reactive Contracts).
 
 ---
 
-## Verified workflow (tx hashes)
+<a id="tx-proof"></a>
+
+## ✅ Verified workflow (tx hashes)
 
 One end-to-end run (paid `superComfort` → Reactive “React to event” → destination callback):
 
@@ -100,7 +135,9 @@ Demo: SuperComfort → Points /
 
 ---
 
-## Workflow after deployment
+<a id="workflow-after-deployment"></a>
+
+## 🔄 Workflow after deployment
 
 ### A. One-time setup (done for this submission)
 
@@ -118,20 +155,28 @@ Demo: SuperComfort → Points /
 
 ---
 
-## Repository layout
+## 📁 Repository layout
 
 ```
-hks1/
+EchoCapsule/
 ├── contracts/          # Hardhat — Origin NFT (CapsuleNFT, SVGRenderer)
 ├── reactive/           # Foundry — SuperComfortReactive + ComfortPointsCallback + runbook
 ├── backend/            # Go API, worker, optional indexer (not required for Reactive proof)
-├── frontend/           # Next.js + Wagmi
+├── frontend/           # Next.js 14 + Wagmi / RainbowKit
 └── docs/               # demo-video-intro.html (4-slide story deck)
 ```
 
 ---
 
-## Local development
+## 📎 Reactive runbook
+
+Deployment, env vars, and Foundry commands: **[`reactive/README.md`](reactive/README.md)**.
+
+---
+
+<a id="local-dev"></a>
+
+## 🚀 Local development
 
 ### Contracts (Sepolia)
 
@@ -159,9 +204,11 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Set `NEXT_PUBLIC_CONTRACT_ADDRESS` and `NEXT_PUBLIC_API_BASE` in `frontend/.env.local`. **Wallet must be on Sepolia** (chain ID `11155111`) for contract calls.
+Open [http://localhost:3000](http://localhost:3000). Set `NEXT_PUBLIC_CONTRACT_ADDRESS` and `NEXT_PUBLIC_API_BASE` in `frontend/.env.local`.
 
-**Mood audio:** MP3s under `frontend/public/audio/` are **gitignored** (large files). Copy your own files locally using the filenames listed in [`frontend/public/audio/README.md`](frontend/public/audio/README.md).
+**Wallet:** must be on **Sepolia** (chain ID `11155111`) for contract calls.
+
+**🎵 Mood audio:** MP3s in `frontend/public/audio/` are **gitignored**. Copy files locally — filenames must match [`frontend/public/audio/README.md`](frontend/public/audio/README.md).
 
 ### Tests & coverage
 
@@ -173,14 +220,24 @@ npx hardhat coverage
 
 ---
 
-## Dynamic NFT note (for judges)
+## 📝 Dynamic NFT note (for judges)
 
 All minted tokens read shared **`globalState`** in `CapsuleNFT`. When the idol updates emotion/media, **every** token’s on-chain `tokenURI` reflects the latest state — intentional product design.
 
 ---
 
-## References
+## 🔗 References
 
-- Reactive docs: [https://dev.reactive.network/](https://dev.reactive.network/)  
-- Lasna RPC / chain ID: [https://dev.reactive.network/reactive-mainnet](https://dev.reactive.network/reactive-mainnet)  
-- Official demos: [https://github.com/Reactive-Network/reactive-smart-contract-demos](https://github.com/Reactive-Network/reactive-smart-contract-demos)
+- Reactive docs: [dev.reactive.network](https://dev.reactive.network/)  
+- Lasna RPC / chain ID: [reactive-mainnet](https://dev.reactive.network/reactive-mainnet)  
+- Official demos: [reactive-smart-contract-demos](https://github.com/Reactive-Network/reactive-smart-contract-demos)
+
+<div align="center">
+
+<br/>
+
+**Built with 💜 for the Reactive Network hackathon**
+
+<br/>
+
+</div>
