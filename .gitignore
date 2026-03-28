@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+
+# Next.js
+frontend/.next/
+frontend/out/
+
+# Env & secrets (never commit)
+.env
+.env.*
+!.env.example
+!.env*.example
+
+# Hardhat / Solidity
+contracts/artifacts/
+contracts/cache/
+contracts/coverage/
+contracts/coverage.json
+
+# Foundry (reactive)
+reactive/out/
+reactive/cache/
+reactive/broadcast/
+
+# Go
+backend/*.exe
+backend/tmp/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs & debug
+*.log
+npm-debug.log*
+
+# Misc
+*.tsbuildinfo
+.turbo

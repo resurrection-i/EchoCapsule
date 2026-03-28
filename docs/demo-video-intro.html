@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EchoCapsule — Cyber-Idol Story Deck</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Outfit", "ui-sans-serif", "system-ui", "sans-serif"],
+            mono: ["JetBrains Mono", "ui-monospace", "monospace"],
+          },
+          animation: {
+            "breathe": "breathe 5s ease-in-out infinite",
+            "glow-pulse": "glow-pulse 3s ease-in-out infinite",
+            "stick": "stick 2.2s ease-in-out infinite",
+          },
+          keyframes: {
+            breathe: {
+              "0%, 100%": { transform: "translateY(0) scale(1)", boxShadow: "0 25px 80px -20px rgba(88, 28, 135, 0.45)" },
+              "50%": { transform: "translateY(-6px) scale(1.01)", boxShadow: "0 35px 100px -15px rgba(219, 39, 119, 0.35)" },
+            },
+            "glow-pulse": {
+              "0%, 100%": { opacity: "0.5", filter: "blur(40px)" },
+              "50%": { opacity: "0.85", filter: "blur(56px)" },
+            },
+            stick: {
+              "0%, 100%": { opacity: "0.4", transform: "translateY(0)" },
+              "50%": { opacity: "1", transform: "translateY(-8px)" },
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    html, body { height: 100%; }
+    .slide-panel {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.65s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.65s step-end;
+    }
+    .slide-panel.is-active {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.65s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s step-start;
+      z-index: 10;
+    }
+    .concert-lights {
+      background: radial-gradient(ellipse at 50% 100%, rgba(219, 39, 119, 0.35), transparent 55%),
+                  radial-gradient(ellipse at 20% 80%, rgba(34, 211, 238, 0.2), transparent 45%),
+                  radial-gradient(ellipse at 80% 75%, rgba(167, 139, 250, 0.25), transparent 45%),
+                  linear-gradient(180deg, #0c0a12 0%, #1e1b2e 100%);
+    }
+
+    /* Audio visualizer bars — height + opacity bounce */
+    @keyframes wavePulse {
+      0%, 100% { transform: scaleY(0.18); opacity: 0.45; }
+      18% { transform: scaleY(0.62); opacity: 0.88; }
+      34% { transform: scaleY(0.32); opacity: 0.58; }
+      52% { transform: scaleY(0.95); opacity: 1; }
+      71% { transform: scaleY(0.48); opacity: 0.72; }
+      88% { transform: scaleY(0.78); opacity: 0.92; }
+    }
+    .wave-bar {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: 999px;
+      transform-origin: bottom center;
+      will-change: transform, opacity;
+      animation: wavePulse var(--wave-dur, 0.95s) ease-in-out infinite;
+      animation-delay: var(--wave-delay, 0s);
+    }
+
+    /* Slide 1 card — soft pink halo breathing (syncs with “alive” feel) */
+    @keyframes slide1CardGlow {
+      0%, 100% {
+        box-shadow:
+          0 0 0 1px rgba(255, 255, 255, 0.1),
+          0 25px 80px -24px rgba(88, 28, 135, 0.42),
+          0 0 48px -12px rgba(236, 72, 153, 0.07);
+      }
+      50% {
+        box-shadow:
+          0 0 0 1px rgba(255, 255, 255, 0.12),
+          0 32px 96px -18px rgba(219, 39, 119, 0.38),
+          0 0 64px -8px rgba(236, 72, 153, 0.14);
+      }
+    }
+
+    /* Enter slide 1 from any navigation */
+    @keyframes slide1ContentIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .slide-panel[data-slide="0"]:not(.is-active) .slide1-card-inner {
+      opacity: 0;
+      transform: translateY(16px);
+      animation: none;
+    }
+    .slide-panel[data-slide="0"].is-active .slide1-card-inner {
+      animation:
+        slide1ContentIn 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+        slide1CardGlow 1.85s ease-in-out infinite;
+    }
+
+    /* Decorative opening quote — large + neon pink breathing */
+    @keyframes quoteNeonBreath {
+      0%, 100% {
+        filter: drop-shadow(0 0 10px rgba(236, 72, 153, 0.35)) drop-shadow(0 0 24px rgba(236, 72, 153, 0.15));
+        opacity: 0.88;
+      }
+      50% {
+        filter: drop-shadow(0 0 18px rgba(244, 114, 182, 0.55)) drop-shadow(0 0 40px rgba(236, 72, 153, 0.28));
+        opacity: 1;
+      }
+    }
+    .slide1-quote-mark {
+      float: left;
+      margin: -0.15em 0.08em 0 -0.06em;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(3.25rem, 8vw, 4.75rem);
+      line-height: 0.85;
+      font-weight: 700;
+      background: linear-gradient(165deg, #fda4af, #ec4899, #a855f7);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      animation: quoteNeonBreath 2.6s ease-in-out infinite;
+    }
+
+    /* Slide 1 — four upward concert neon beams (glow sticks) */
+    .slide1-spotlight-stage {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      border-radius: inherit;
+      pointer-events: none;
+    }
+    /* Stage fill — avoids “empty black” */
+    .slide1-spotlight-stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      border-radius: inherit;
+      background:
+        radial-gradient(ellipse 78% 58% at 50% 52%, rgba(109, 40, 217, 0.38) 0%, transparent 62%),
+        radial-gradient(ellipse 55% 42% at 50% 100%, rgba(236, 72, 153, 0.16) 0%, transparent 58%),
+        radial-gradient(ellipse 40% 35% at 30% 70%, rgba(34, 211, 238, 0.08) 0%, transparent 55%);
+      opacity: 1;
+      pointer-events: none;
+    }
+    .slide1-spotlight-stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      border-radius: inherit;
+      background: radial-gradient(ellipse 92% 88% at 50% 48%, transparent 22%, rgba(6, 4, 12, 0.5) 100%);
+      mix-blend-mode: multiply;
+      opacity: 0.55;
+      pointer-events: none;
+    }
+
+    /* 核心光束基类 */
+    .neon-beam {
+      position: absolute;
+      bottom: -15%;
+      width: 14px;
+      border-radius: 999px;
+      transform-origin: bottom center;
+      mix-blend-mode: screen;
+      will-change: transform, opacity;
+      filter: drop-shadow(0 0 12px currentColor) blur(1px);
+      z-index: 1;
+    }
+
+    /* 呼吸与微弱摇曳动效 */
+    @keyframes beamBreathe {
+      0%, 100% {
+        opacity: 0.6;
+        transform: rotate(var(--rot)) scaleY(0.95);
+      }
+      50% {
+        opacity: 1;
+        transform: rotate(calc(var(--rot) + 2deg)) scaleY(1.05);
+      }
+    }
+
+    /* 1. 左侧粉色光束 (向右倾斜) */
+    .beam-pink-left {
+      left: 20%;
+      height: 90%;
+      color: #ec4899;
+      background: linear-gradient(to top, #ec4899 0%, rgba(236, 72, 153, 0.8) 40%, transparent 100%);
+      --rot: 20deg;
+      animation: beamBreathe 4s ease-in-out infinite alternate;
+    }
+
+    /* 2. 中间紫色高光束 (向右倾斜，交叉点) */
+    .beam-purple-tall {
+      left: 35%;
+      height: 110%;
+      color: #a855f7;
+      background: linear-gradient(to top, #a855f7 0%, rgba(168, 85, 247, 0.8) 50%, transparent 100%);
+      --rot: 12deg;
+      animation: beamBreathe 5s ease-in-out infinite alternate-reverse;
+    }
+
+    /* 3. 右侧青色短光束 (向左倾斜) */
+    .beam-cyan-short {
+      left: 65%;
+      height: 60%;
+      color: #06b6d4;
+      background: linear-gradient(to top, #06b6d4 0%, rgba(6, 182, 212, 0.8) 30%, transparent 100%);
+      --rot: -18deg;
+      animation: beamBreathe 3.5s ease-in-out infinite alternate;
+    }
+
+    /* 4. 右侧蓝色光束 (向左倾斜) */
+    .beam-blue-right {
+      left: 75%;
+      height: 85%;
+      color: #3b82f6;
+      background: linear-gradient(to top, #3b82f6 0%, rgba(59, 130, 246, 0.8) 40%, transparent 100%);
+      --rot: -25deg;
+      animation: beamBreathe 4.5s ease-in-out infinite alternate-reverse;
+    }
+    /* Card corner: miniature crossed glow sticks */
+    .slide1-corner-glow {
+      position: relative;
+      width: min(5.5rem, 28vw);
+      height: min(5.5rem, 28vw);
+      border-radius: 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+    }
+    .slide1-corner-glow::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 55%, rgba(88, 28, 135, 0.45) 0%, transparent 65%);
+      opacity: 0.9;
+    }
+    .slide1-corner-beam {
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+    .slide1-corner-beam--a {
+      left: -95%;
+      top: -88%;
+      transform-origin: 82% 10%;
+      transform: rotate(38deg);
+      background: conic-gradient(
+        from 255deg at 82% 10%,
+        transparent 0deg,
+        rgba(236, 72, 153, 0.55) 5deg,
+        rgba(255, 182, 220, 0.85) 7deg,
+        rgba(236, 72, 153, 0.5) 9deg,
+        transparent 14deg
+      );
+      filter: blur(0.5px);
+    }
+    .slide1-corner-beam--b {
+      right: -95%;
+      top: -88%;
+      transform-origin: 18% 10%;
+      transform: rotate(-38deg);
+      background: conic-gradient(
+        from 105deg at 18% 10%,
+        transparent 0deg,
+        rgba(167, 139, 250, 0.55) 5deg,
+        rgba(221, 214, 255, 0.88) 7deg,
+        rgba(139, 92, 246, 0.5) 9deg,
+        transparent 14deg
+      );
+      filter: blur(0.5px);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .neon-beam { animation: none; opacity: 0.85; transform: rotate(var(--rot)) scaleY(1); }
+    }
+
+    /* ── Slide 4: energy beam along timeline ── */
+    @keyframes energyFlow {
+      0% { transform: translateX(-40%); opacity: 0; }
+      5% { opacity: 1; }
+      95% { opacity: 1; }
+      100% { transform: translateX(340%); opacity: 0; }
+    }
+    .arch-beam-track {
+      position: absolute;
+      left: 18%;
+      right: 18%;
+      top: 2.25rem;
+      height: 4px;
+      border-radius: 999px;
+      overflow: hidden;
+      display: none;
+      background: linear-gradient(90deg, rgba(236,72,153,0.45), rgba(139,92,246,0.5), rgba(34,211,238,0.45));
+    }
+    @media (min-width: 640px) {
+      .arch-beam-track { display: block; }
+    }
+    .arch-beam-glow {
+      position: absolute;
+      top: -2px;
+      width: 42%;
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.95), rgba(255,255,255,0.6), transparent);
+      filter: blur(3px);
+      animation: energyFlow 2.8s linear infinite;
+      pointer-events: none;
+    }
+
+    /* Sequential relay pulse on nodes (single 4.5s loop) */
+    /* box-shadow only — avoids overriding rotate-45 on Lasna diamond */
+    @keyframes relayOrigin {
+      0%, 11% {
+        box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.55), 0 0 36px rgba(236, 72, 153, 0.65), 0 0 60px rgba(236, 72, 153, 0.25);
+      }
+      16%, 100% {
+        box-shadow: 0 0 24px rgba(236, 72, 153, 0.35);
+      }
+    }
+    @keyframes relayLasna {
+      0%, 21% { box-shadow: 0 0 28px rgba(139, 92, 246, 0.35); }
+      26%, 38% {
+        box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.6), 0 0 40px rgba(139, 92, 246, 0.7), 0 0 64px rgba(167, 139, 250, 0.3);
+      }
+      43%, 100% { box-shadow: 0 0 28px rgba(139, 92, 246, 0.35); }
+    }
+    @keyframes relayDest {
+      0%, 48% { box-shadow: 0 0 24px rgba(34, 211, 238, 0.3); }
+      53%, 65% {
+        box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.55), 0 0 40px rgba(34, 211, 238, 0.65), 0 0 64px rgba(34, 211, 238, 0.28);
+      }
+      70%, 100% { box-shadow: 0 0 24px rgba(34, 211, 238, 0.3); }
+    }
+    .arch-node--origin {
+      animation: relayOrigin 4.5s ease-in-out infinite;
+    }
+    .arch-node--lasna {
+      animation: relayLasna 4.5s ease-in-out infinite;
+    }
+    .arch-node--dest {
+      animation: relayDest 4.5s ease-in-out infinite;
+    }
+
+    /* Terminal cursor blink */
+    @keyframes termCursor {
+      0%, 45% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+    .tx-cursor {
+      display: inline-block;
+      width: 0.45em;
+      margin-left: 1px;
+      animation: termCursor 1s step-end infinite;
+      color: rgba(34, 211, 238, 0.85);
+      font-weight: 600;
+    }
+    .tx-cursor.done { animation: none; opacity: 0; width: 0; margin: 0; overflow: hidden; }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-900 via-purple-950 to-black text-white font-sans antialiased overflow-hidden selection:bg-pink-500/30">
+  <!-- ambient -->
+  <div class="pointer-events-none fixed inset-0 z-0">
+    <div class="absolute -top-1/2 left-1/2 h-[120vh] w-[120vh] -translate-x-1/2 rounded-full bg-purple-600/20 blur-[100px] animate-glow-pulse" aria-hidden="true"></div>
+    <div class="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-pink-600/15 blur-[90px]" aria-hidden="true"></div>
+    <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_65%_55%_at_50%_42%,black,transparent)]" aria-hidden="true"></div>
+  </div>
+
+  <div class="relative z-10 flex min-h-screen flex-col pb-28 pt-6 px-4 sm:px-8">
+    <header class="mb-4 flex shrink-0 justify-between px-1 text-[10px] font-mono uppercase tracking-[0.2em] text-white/35 sm:text-xs">
+      <span class="bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 bg-clip-text font-bold tracking-widest text-transparent">EchoCapsule</span>
+      <span>Reactive Network · Vibe Coding</span>
+    </header>
+
+    <!-- Slides viewport -->
+    <div class="relative flex min-h-0 flex-1 items-center justify-center">
+      <div class="relative h-full w-full max-w-6xl" id="deckViewport">
+
+        <!-- Slide 1 -->
+        <section class="slide-panel is-active absolute inset-0 flex items-center justify-center" data-slide="0" aria-label="Slide 1">
+          <div class="slide1-card-inner relative w-full rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
+            <!-- Corner: miniature crossed glow sticks (matches left stage) -->
+            <div class="pointer-events-none absolute bottom-5 right-5 z-[1] opacity-95 sm:bottom-7 sm:right-7" aria-hidden="true">
+              <div class="slide1-corner-glow">
+                <div class="slide1-corner-beam slide1-corner-beam--a"></div>
+                <div class="slide1-corner-beam slide1-corner-beam--b"></div>
+              </div>
+            </div>
+
+            <p class="relative z-[2] mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.25em] text-white/40">
+              <span class="h-px w-8 bg-gradient-to-r from-transparent to-pink-500/60"></span>
+              Phase 01 / Origin
+            </p>
+            <div class="relative z-[2] grid gap-8 lg:grid-cols-2 lg:gap-10">
+              <div class="relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/10 concert-lights">
+                <p class="absolute left-3 top-3 z-[2] font-mono text-[9px] text-cyan-400/80 sm:text-[10px]">SYS.CONN // LOST_FRAGMENTS</p>
+                <div class="slide1-spotlight-stage" aria-hidden="true">
+                  <div class="neon-beam beam-pink-left"></div>
+                  <div class="neon-beam beam-purple-tall"></div>
+                  <div class="neon-beam beam-cyan-short"></div>
+                  <div class="neon-beam beam-blue-right"></div>
+                </div>
+                <div class="absolute bottom-3 left-3 z-[2] flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-black/30 text-white/50">
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+              </div>
+              <div class="min-w-0">
+                <h1 class="text-3xl font-black leading-tight tracking-tight sm:text-4xl lg:text-[2.35rem]">
+                  <span class="text-white">Fragile Bonds:</span><br />
+                  <span class="bg-gradient-to-r from-pink-400 via-fuchsia-500 to-pink-500 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(236,72,153,0.35)]">Nowhere for Emotions to Land</span>
+                </h1>
+                <blockquote class="clear-both mt-6 overflow-hidden border-l-4 border-pink-500 pl-3 text-lg font-medium leading-snug text-white/90 sm:pl-4 sm:text-xl">
+                  <span class="slide1-quote-mark" aria-hidden="true">“</span>
+                  <span class="italic">The core of fan economy is the <span class="bg-gradient-to-r from-fuchsia-500 via-pink-500 to-rose-400 bg-clip-text font-bold not-italic text-transparent">transmission and resonance</span> of emotions.</span>”
+                </blockquote>
+                <p class="mt-5 text-sm leading-relaxed text-white/65 sm:text-base">
+                  In Web2, years of votes, tips, and quiet companionship live as
+                  <span class="font-medium text-orange-400/95">cold numbers</span>
+                  inside a
+                  <span class="font-medium text-orange-400/95">centralized black box</span>.
+                  Platforms can ban accounts overnight; idols rarely reach the individuals behind the data. Emotional footprints
+                  <span class="font-medium text-orange-400/95">scatter across silos</span>
+                  — with
+                  <span class="font-medium text-orange-400/95">no ownership</span>
+                  or verifiable proof.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 2 -->
+        <section class="slide-panel absolute inset-0 flex items-center justify-center" data-slide="1" aria-label="Slide 2">
+          <div class="w-full animate-breathe rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
+            <p class="mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.25em] text-white/40">
+              <span class="h-px w-8 bg-gradient-to-r from-transparent to-violet-500/60"></span>
+              Phase 02 / Dilemma
+            </p>
+            <div class="flex flex-col gap-8 lg:flex-row lg:items-start">
+              <div class="flex shrink-0 justify-center lg:w-44">
+                <svg viewBox="0 0 160 140" class="h-36 w-40 text-white/30 sm:h-44 sm:w-48" aria-hidden="true">
+                  <path d="M10 70 L55 70" stroke="url(#g1)" stroke-width="4" stroke-linecap="round" stroke-dasharray="8 6" />
+                  <path d="M105 70 L150 70" stroke="url(#g1)" stroke-width="4" stroke-linecap="round" stroke-dasharray="8 6" />
+                  <circle cx="80" cy="70" r="28" fill="rgba(0,0,0,0.5)" stroke="rgba(236,72,153,0.6)" stroke-width="2" />
+                  <text x="80" y="78" text-anchor="middle" fill="#f472b6" font-size="28" font-weight="bold" font-family="Outfit,sans-serif">?</text>
+                  <defs>
+                    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#a78bfa" />
+                      <stop offset="100%" stop-color="#ec4899" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+              <div class="min-w-0 flex-1">
+                <h2 class="text-3xl font-black leading-tight sm:text-4xl">
+                  <span class="bg-gradient-to-r from-white via-pink-100 to-white bg-clip-text text-transparent">The Half-Built Trap:</span><br />
+                  <span class="text-white/95">Trust Crisis in the </span>
+                  <span class="bg-gradient-to-r from-pink-500 to-rose-400 bg-clip-text text-transparent">Black Box</span>
+                </h2>
+                <div class="mt-6 rounded-2xl border border-pink-500/20 bg-pink-500/5 p-4 sm:p-5">
+                  <p class="text-base font-medium leading-relaxed text-white/90 sm:text-lg">
+                    “Web3 gave us <strong class="text-white">static NFTs</strong> — it did <span class="bg-gradient-to-r from-fuchsia-500 via-pink-500 to-rose-400 bg-clip-text font-bold text-transparent">not</span> solve automatic emotional
+                    <span class="bg-gradient-to-r from-fuchsia-500 via-pink-500 to-rose-400 bg-clip-text font-bold text-transparent">resonance</span>.”
+                  </p>
+                </div>
+                <div class="mt-6 grid gap-5 text-sm text-white/65 sm:grid-cols-2 sm:text-[0.95rem] sm:leading-relaxed">
+                  <p>
+                    Most “fan NFT” drops are still <strong class="text-white/90">JPEG galleries</strong> — no real <strong class="text-violet-300">responsiveness</strong>.
+                    When a fan spends <span class="font-mono text-amber-300/90">0.0001 ETH</span> for an on-chain gesture (e.g. comfort), how should the idol <strong class="text-white">automatically</strong> return points or fan-tier proof?
+                  </p>
+                  <p>
+                    Too often the answer is a new
+                    <span class="font-semibold text-transparent bg-gradient-to-r from-pink-400 to-fuchsia-400 bg-clip-text">trust black box</span>:
+                    an opaque server script listening to <span class="font-mono text-pink-300/90">Sepolia</span> events, then manually firing rewards. If the server stalls, <strong class="text-rose-300">the love never lands on-chain.</strong>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 3 -->
+        <section class="slide-panel absolute inset-0 flex items-center justify-center" data-slide="2" aria-label="Slide 3">
+          <div class="w-full animate-breathe rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
+            <div class="text-center">
+              <h2 class="bg-gradient-to-r from-cyan-400 via-pink-500 to-violet-500 bg-clip-text text-3xl font-black text-transparent sm:text-4xl">
+                EchoCapsule
+              </h2>
+              <p class="mt-1 text-sm font-medium tracking-wide text-white/50">On-chain emotional resonance assets · Idol Mood Capsule</p>
+            </div>
+            <div class="relative mx-auto mt-8 max-w-xs">
+              <div class="pointer-events-none absolute -inset-6 rounded-3xl bg-gradient-to-r from-pink-600/40 via-fuchsia-500/30 to-violet-600/40 opacity-70 blur-2xl animate-glow-pulse" aria-hidden="true"></div>
+              <div class="relative overflow-hidden rounded-2xl border border-pink-500/40 bg-gradient-to-b from-zinc-900 to-black p-5 shadow-[0_0_40px_rgba(236,72,153,0.25)]">
+                <div class="flex items-center justify-between text-[9px] font-mono uppercase tracking-wider text-white/45">
+                  <span class="flex items-center gap-1"><span class="h-1.5 w-1.5 animate-pulse rounded-full bg-red-500"></span> LIVE_STATE</span>
+                  <span>ERC-721(D)</span>
+                </div>
+                <div class="mt-4 flex flex-col items-center py-4">
+                  <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-pink-500/30 to-violet-600/30 text-4xl shadow-inner">⚗️</div>
+                  <div class="mt-4 flex h-10 items-end justify-center gap-1">
+                    <span class="w-1.5 rounded-sm bg-pink-500" style="height:40%"></span>
+                    <span class="w-1.5 rounded-sm bg-fuchsia-400" style="height:75%"></span>
+                    <span class="w-1.5 rounded-sm bg-violet-500" style="height:55%"></span>
+                    <span class="w-1.5 rounded-sm bg-cyan-400" style="height:90%"></span>
+                    <span class="w-1.5 rounded-sm bg-pink-400" style="height:65%"></span>
+                    <span class="w-1.5 rounded-sm bg-purple-400" style="height:45%"></span>
+                    <span class="w-1.5 rounded-sm bg-rose-400" style="height:80%"></span>
+                  </div>
+                </div>
+                <div class="mt-2 flex justify-between border-t border-white/10 pt-3 text-[10px] font-mono text-white/40">
+                  <span>0x7F…3892</span>
+                  <span class="text-pink-400/90">RESONANCE 99.9%</span>
+                </div>
+              </div>
+            </div>
+            <blockquote class="mx-auto mt-8 max-w-3xl text-center text-lg font-bold leading-snug text-white sm:text-xl">
+              Enter <span class="bg-gradient-to-r from-fuchsia-500 via-pink-500 to-rose-400 bg-clip-text text-transparent">EchoCapsule</span> — a <span class="bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent">living</span>, on-chain proof of feeling.
+            </blockquote>
+            <p class="mx-auto mt-4 max-w-3xl text-center text-sm leading-relaxed text-white/65 sm:text-base">
+              We built a <strong class="text-white">dynamic NFT</strong> stack (multimodal audio + on-chain SVG): when the idol switches mood,
+              <strong class="text-pink-300">every fan capsule reshapes in sync</strong>. It is more than a status board — it is a transparent record of companionship,
+              anchored by cryptography so <span class="font-semibold text-cyan-300/90">emotional ownership</span> is harder to erase.
+            </p>
+          </div>
+        </section>
+
+        <!-- Slide 4 -->
+        <section class="slide-panel absolute inset-0 flex items-center justify-center" data-slide="3" aria-label="Slide 4">
+          <div class="w-full animate-breathe rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
+            <p class="text-center font-mono text-[10px] uppercase tracking-[0.3em] text-amber-400/90 sm:text-xs">
+              ─── Phase 04 / Architecture ───
+            </p>
+            <h2 class="mt-3 text-center text-3xl font-black sm:text-4xl">
+              <span class="text-white">Why Reactive:</span>
+              <span class="bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent"> Event-Driven Closed Loop</span>
+            </h2>
+            <p class="mx-auto mt-3 max-w-2xl text-center text-base text-white/80 sm:text-lg">
+              “We use <span class="font-bold text-amber-300">Reactive Network</span> to close emotional <span class="italic text-pink-300">response</span> entirely on-chain.”
+            </p>
+            <p class="mx-auto mt-2 max-w-xl text-center font-mono text-xs text-white/35">
+              /* Code is the contract — no fragile server scripts in the trust path */
+            </p>
+
+            <div class="relative mx-auto mt-10 max-w-4xl">
+              <div class="arch-beam-track" aria-hidden="true">
+                <div class="arch-beam-glow"></div>
+              </div>
+              <div class="grid gap-8 sm:grid-cols-3 sm:gap-4">
+                <div class="text-center">
+                  <div class="arch-node arch-node--origin mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-pink-500/60 bg-pink-500/10 shadow-[0_0_24px_rgba(236,72,153,0.35)] transition-shadow">
+                    <svg class="h-7 w-7 text-pink-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                  </div>
+                  <span class="mt-2 inline-block rounded-full border border-pink-500/40 bg-pink-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-pink-300">Origin Tx</span>
+                  <h3 class="mt-3 font-bold text-white">Auto response</h3>
+                  <p class="mt-2 text-xs leading-relaxed text-white/55 sm:text-sm">
+                    Fan <strong class="text-white/80">tip / comfort</strong> on <strong class="text-pink-200">Sepolia</strong> is observed by the <strong class="text-violet-200">Lasna</strong> reactive layer in the same beat.
+                  </p>
+                </div>
+                <div class="text-center">
+                  <div class="arch-node arch-node--lasna mx-auto flex h-16 w-16 rotate-45 items-center justify-center rounded-xl border-2 border-violet-500/60 bg-violet-950/50 shadow-[0_0_28px_rgba(139,92,246,0.35)] transition-shadow">
+                    <span class="-rotate-45 font-mono text-xs font-bold text-violet-200">&lt;/&gt;<br/><span class="text-[9px] text-white/50">LASNA</span></span>
+                  </div>
+                  <span class="mt-2 inline-block rounded-full border border-violet-500/40 bg-violet-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-violet-300">Reactive</span>
+                  <h3 class="mt-3 font-bold text-white">On-chain logic</h3>
+                  <p class="mt-2 text-xs leading-relaxed text-white/55 sm:text-sm">
+                    <strong class="text-violet-200">Reactive contracts</strong> ingest the message + value, compute weighted points — <span class="text-white/70">no opaque cron</span>.
+                  </p>
+                </div>
+                <div class="text-center">
+                  <div class="arch-node arch-node--dest mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-cyan-500/60 bg-cyan-500/10 shadow-[0_0_24px_rgba(34,211,238,0.3)] transition-shadow">
+                    <svg class="h-8 w-8 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                  </div>
+                  <span class="mt-2 inline-block rounded-full border border-cyan-500/40 bg-cyan-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-cyan-300">Dest Tx</span>
+                  <h3 class="mt-3 font-bold text-white">Callback settlement</h3>
+                  <p class="mt-2 text-xs leading-relaxed text-white/55 sm:text-sm">
+                    A <strong class="text-cyan-200">Sepolia callback</strong> updates state and mints verifiable <span class="font-semibold text-amber-300/90">super-fan points</span> — full transparency, no third-party relay in the middle.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div
+              id="hash-terminal"
+              class="mx-auto mt-8 max-w-3xl rounded-2xl border border-violet-500/30 bg-black/60 p-4 font-mono text-[10px] leading-relaxed shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] sm:text-[11px]"
+            >
+              <div class="mb-2 flex items-center gap-2 border-b border-white/10 pb-2 text-[9px] uppercase tracking-widest text-emerald-500/80">
+                <span class="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.7)]"></span>
+                Verified run · Tx hashes
+              </div>
+              <div class="space-y-2 text-violet-200/95">
+                <p class="min-h-[1.55em]">
+                  <span class="text-amber-400/90">ORIGIN</span>
+                  <span class="text-white/30"> </span>
+                  <span class="tx-hash-body text-pink-300/95" data-hash="0x9eb3306ff198d0531459097b3ed178faa119e5ad1bcc06d70fe6d443b45e21f8"></span><span class="tx-cursor done" aria-hidden="true">▍</span>
+                </p>
+                <p class="min-h-[1.55em]">
+                  <span class="text-violet-400/90">REACTIVE</span>
+                  <span class="text-white/30"> </span>
+                  <span class="tx-hash-body text-violet-300/95" data-hash="0x1fbd2b75ae54edbbb1b6bd13e7846f5318441adb29d190ebd1949b39267ab6e1"></span><span class="tx-cursor done" aria-hidden="true">▍</span>
+                </p>
+                <p class="min-h-[1.55em]">
+                  <span class="text-cyan-400/90">DEST</span>
+                  <span class="text-white/30"> </span>
+                  <span class="tx-hash-body text-cyan-300/95" data-hash="0xe9375f3944148bf72f6cea1c2f9aa803e864fedf0d004b5812ecc6d7e4f34692"></span><span class="tx-cursor done" aria-hidden="true">▍</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <nav class="fixed bottom-0 left-0 right-0 z-50 flex justify-center px-4 pb-5 pt-2" aria-label="Slide navigation">
+      <div class="flex items-center gap-1 rounded-full border border-white/10 bg-black/50 px-2 py-2 shadow-2xl backdrop-blur-xl sm:gap-2 sm:px-4">
+        <button type="button" id="btnPrev" class="rounded-full px-2 py-1.5 text-xs text-white/50 transition hover:bg-white/10 hover:text-white sm:px-3 sm:text-sm">
+          &lt; Prev
+        </button>
+        <span class="hidden h-4 w-px bg-white/15 sm:block" aria-hidden="true"></span>
+        <div class="flex items-center gap-1 sm:gap-2" id="pageDots"></div>
+        <span class="hidden h-4 w-px bg-white/15 sm:block" aria-hidden="true"></span>
+        <button type="button" id="btnNext" class="rounded-full px-2 py-1.5 text-xs text-white/50 transition hover:bg-white/10 hover:text-white sm:px-3 sm:text-sm">
+          Next &gt;
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <script>
+    (function () {
+      var slides = [].slice.call(document.querySelectorAll(".slide-panel"));
+      var total = slides.length;
+      var idx = 0;
+      var dotsEl = document.getElementById("pageDots");
+      var btnPrev = document.getElementById("btnPrev");
+      var btnNext = document.getElementById("btnNext");
+
+      function renderDots() {
+        dotsEl.innerHTML = "";
+        for (var i = 0; i < total; i++) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.setAttribute("aria-label", "Go to slide " + (i + 1));
+          b.className =
+            "relative h-9 w-9 rounded-full text-sm font-semibold transition-all duration-300 " +
+            (i === idx
+              ? "bg-gradient-to-br from-pink-500 to-purple-600 text-white shadow-[0_0_20px_rgba(236,72,153,0.55)] scale-105"
+              : "text-white/40 hover:bg-white/10 hover:text-white/80");
+          b.textContent = String(i + 1);
+          b.addEventListener(
+            "click",
+            (function (j) {
+              return function () {
+                goTo(j);
+              };
+            })(i)
+          );
+          dotsEl.appendChild(b);
+        }
+      }
+
+      var terminalTimers = [];
+      var hashTerminal = document.getElementById("hash-terminal");
+
+      function clearTerminalTimers() {
+        terminalTimers.forEach(function (id) {
+          clearTimeout(id);
+        });
+        terminalTimers = [];
+      }
+
+      function resetHashTerminal() {
+        if (!hashTerminal) return;
+        hashTerminal.querySelectorAll(".tx-hash-body").forEach(function (el) {
+          el.textContent = "";
+        });
+        hashTerminal.querySelectorAll(".tx-cursor").forEach(function (c) {
+          c.classList.add("done");
+        });
+      }
+
+      function startHashTerminal() {
+        if (!hashTerminal) return;
+        clearTerminalTimers();
+        resetHashTerminal();
+        var block = hashTerminal.querySelector(".space-y-2");
+        if (!block) return;
+        var rows = [].slice.call(block.querySelectorAll("p"));
+        var charMs = 11;
+        var linePauseMs = 200;
+
+        function typeChars(el, text, pos, onDone) {
+          if (pos >= text.length) {
+            onDone();
+            return;
+          }
+          el.textContent += text.charAt(pos);
+          terminalTimers.push(
+            setTimeout(function () {
+              typeChars(el, text, pos + 1, onDone);
+            }, charMs)
+          );
+        }
+
+        function runRow(i) {
+          if (i >= rows.length) return;
+          var row = rows[i];
+          var body = row.querySelector(".tx-hash-body");
+          var cursor = row.querySelector(".tx-cursor");
+          var full = (body && body.getAttribute("data-hash")) || "";
+          if (!body) {
+            runRow(i + 1);
+            return;
+          }
+          if (cursor) cursor.classList.remove("done");
+          typeChars(body, full, 0, function () {
+            if (cursor) cursor.classList.add("done");
+            terminalTimers.push(
+              setTimeout(function () {
+                runRow(i + 1);
+              }, linePauseMs)
+            );
+          });
+        }
+
+        terminalTimers.push(
+          setTimeout(function () {
+            runRow(0);
+          }, 120)
+        );
+      }
+
+      function goTo(n) {
+        var next = Math.max(0, Math.min(total - 1, n));
+        if (next === idx) return;
+        var prev = idx;
+        idx = next;
+        slides.forEach(function (s, i) {
+          s.classList.toggle("is-active", i === idx);
+        });
+        renderDots();
+        if (prev === 3) {
+          clearTerminalTimers();
+          resetHashTerminal();
+        }
+        if (idx === 3) {
+          startHashTerminal();
+        }
+      }
+
+      btnPrev.addEventListener("click", function () {
+        goTo(idx - 1);
+      });
+      btnNext.addEventListener("click", function () {
+        goTo(idx + 1);
+      });
+
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowRight" || e.key === " ") {
+          e.preventDefault();
+          goTo(idx + 1);
+        } else if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          goTo(idx - 1);
+        }
+      });
+
+      renderDots();
+    })();
+  </script>
+</body>
+</html>
