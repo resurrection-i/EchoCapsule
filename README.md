@@ -17,6 +17,7 @@
 
 <br/>
 
+**[▶️ Demo video (Bilibili)](https://www.bilibili.com/video/BV1DzXQBwEfh/)** ·
 **[📖 Reactive runbook](reactive/README.md)** ·
 **[🚀 Quick start](#local-dev)** ·
 **[🏗️ Architecture](#architecture)** ·
@@ -35,7 +36,7 @@
 
 | | |
 | :--- | :--- |
-| **🎥 Demo video (≤ 5 min)** | *Coming soon — add your **YouTube / Loom / Drive** link here after upload.* |
+| **🎥 Demo video (≤ 5 min)** | **[Watch on Bilibili →](https://www.bilibili.com/video/BV1DzXQBwEfh/)** |
 | **📽️ Story deck (HTML)** | Open [`docs/demo-video-intro.html`](docs/demo-video-intro.html) fullscreen. Use **← / →** or the dots: **Phase 01 → 02 → EchoCapsule → Architecture** (terminal-style hashes animate on the last slide). |
 
 **Repository:** [github.com/resurrection-i/EchoCapsule](https://github.com/resurrection-i/EchoCapsule)
